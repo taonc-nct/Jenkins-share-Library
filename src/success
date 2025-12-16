@@ -55,10 +55,10 @@ podTemplate(
 
                     buildah login -u $DOCKER_USER -p $DOCKER_PASS docker.io
                     # Tag image local với repo private
-                    buildah tag $IMAGE_NAME:latest $REGISTRY/$IMAGE_NAME:v1
+                    buildah tag $IMAGE_NAME:latest $REGISTRY:v1
 
                     # Push cả 2 tag lên Docker Hub
-                    buildah push $REGISTRY/$IMAGE_NAME:v1
+                    buildah push $REGISTRY:v1
                     # Kiểm tra images trên node
                     buildah images | grep $IMAGE_NAME
                 '''
