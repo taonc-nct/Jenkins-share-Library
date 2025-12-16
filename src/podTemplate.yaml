@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: maven
+    image: maven:3.9.9-eclipse-temurin-17
+    resources:
+      requests:
+        memory: "1Gi"
+        cpu: "500m"
+      limits:
+        memory: "2Gi"
+        cpu: "1"
+    command:
+    - sleep
+    args:
+    - 99d
+  - name: buildah
+    image: quay.io/buildah/stable:v1.38.0
+    resources:
+      requests:
+        memory: "1Gi"
+        cpu: "500m"
+      limits:
+        memory: "2Gi"
+        cpu: "1"
+    command:
+      - cat
+    tty: true
+    securityContext:
+      privileged: true   # cần để buildah hoạt động đầy đủ
+    volumeMounts:
+      - name: jenkins-workspace
+        mountPath: /home/jenkins/agent
+  - name: a
+  volumes:
+    - name: jenkins-workspace
+      emptyDir: {}
+
+
+
+# podTemplate(yaml: readTrusted('pod.yaml')) {
+#   node(POD_LABEL) {
+#     // ...
+#   }
+# }

@@ -1,0 +1,70 @@
+podTemplate(
+  agentContainer: 'maven',
+  agentInjection: true,
+  containers: [
+    containerTemplate(name: 'maven', image: 'maven:3.9.9-eclipse-temurin-17', command: '', args: ''),
+    containerTemplate(name: 'buildah', image: 'quay.io/buildah/stable:v1.35', command: 'sleep', args: '99d', privileged: true, ttyEnabled: true
+    , runAsUser: '0'),
+  ]) 
+  
+  {
+
+    node(POD_LABEL) {
+        stage('Get a Maven project') {
+            git url: 'https://github.com/taonc-nct/spring-petclinic.git', branch: 'main'
+            container('maven') {
+                    echo "inside"
+                    sh 'mvn -B -ntp clean package'
+                }
+            }
+        stage('Get a Maven project') {
+                echo "check jar file"
+                sh 'ls -lah target/*.jar'
+            }
+            
+        stage('Build Image') {
+            container('buildah') {
+                sh '''
+                    buildah bud \
+                        -t spring-petclinic:${BUILD_NUMBER} \
+                        -t spring-petclinic:latest \
+                    .
+                    buildah images | grep spring-petclinic
+                '''
+      }
+    }
+        stage('Push Image to Docker Hub') {
+            container('buildah') {
+                environment {
+                    DOCKER_USER1 = "nguyentao15820"     // username Docker Hub
+                    DOCKER_PASS1 = "Taonc15820@"           // password Docker Hub
+                    IMAGE_NAME = "spring-petclinic"               // repo name
+                    REGISTRY   = "nguyentao15820/ci-cd"
+                    BUILD_NUMBER= "v1"       // Docker Hub
+                }
+                sh '''
+                    export DOCKER_USER="nguyentao15820"
+                    export DOCKER_PASS="Taonc15820@"
+                    export IMAGE_NAME="spring-petclinic"
+                    export REGISTRY="nguyentao15820/ci-cd"
+                    export BUILD_NUMBER="v1"
+
+                    # Login vào Docker Hub
+                    echo $DOCKER_USER
+                    echo $DOCKER_PASS
+
+                    buildah login -u $DOCKER_USER -p $DOCKER_PASS docker.io
+                    # Tag image local với repo private
+                    buildah tag $IMAGE_NAME:latest $REGISTRY/$IMAGE_NAME:v1
+
+                    # Push cả 2 tag lên Docker Hub
+                    buildah push $REGISTRY/$IMAGE_NAME:v1
+                    # Kiểm tra images trên node
+                    buildah images | grep $IMAGE_NAME
+                '''
+            }
+        }
+
+//-------------
+        }
+}
