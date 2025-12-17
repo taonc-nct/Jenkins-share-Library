@@ -5,6 +5,8 @@ podTemplate(
     containerTemplate(name: 'maven', image: 'maven:3.9.9-eclipse-temurin-17', command: '', args: ''),
     containerTemplate(name: 'buildah', image: 'quay.io/buildah/stable:v1.35', command: 'sleep', args: '99d', privileged: true, ttyEnabled: true
     , runAsUser: '0'),
+    containerTemplate(name: 'trivy',image: 'aquasec/trivy:0.44.0-slim', command: 'sleep',args: '99d', ttyEnabled: true ),
+    
   ]) 
   
   {
