@@ -1,5 +1,5 @@
 def build() {
-    def mvnCommand = 'mvn -B  clean install -DskipTests'
+    def mvnCommand = 'mvn -B -ntp clean package'
     def exitCode = sh(script: mvnCommand, returnStatus: true)
 
     if (exitCode != 0) {
