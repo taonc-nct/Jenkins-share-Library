@@ -1,35 +1,42 @@
 package com.company.git
 
-class GitBranchLister implements Serializable {
+class GitBranchValidator implements Serializable {
 
     def steps
 
-    GitBranchLister(steps) {
+    GitBranchValidator(steps) {
         this.steps = steps
     }
 
     /**
-     * List all remote branches of a Git repository
-     *
-     * @param repoUrl Git repository URL (https or ssh)
-     * @return List of branch names (String)
+     * Validate deploy branch automatically from CI context
      */
-    List<String> listAllBranches(String repoUrl) {
+    void validateDeployBranch() {
 
-        def output = steps.sh(
-            script: "git ls-remote --heads ${repoUrl}",
-            returnStdout: true
-        ).trim()
+        def branch = steps.env.BRANCH_NAME ?: steps.env.GIT_BRANCH
 
-        if (!output) {
-            return []
+        if (!branch) {
+            steps.error("❌ Cannot determine Git branch from CI environment")
         }
 
-        return output
-            .split("\n")
-            .collect { line ->
-                line.split()[1].replace("refs/heads/", "")
-            }
-            .sort()
+        // Normalize branch name (remove origin/)
+        branch = branch.replaceFirst(/^origin\//, '')
+
+        // Block main
+        if (branch == 'main') {
+            steps.error("❌ Deployment from 'main' branch is NOT allowed")
+        }
+
+        // Allow only dev* or hot-fix*
+        if (!(branch ==~ /dev.*/ || branch ==~ /hot-fix.*/)) {
+            steps.error("""
+❌ Branch '${branch}' is NOT allowed for deployment
+✔ Allowed:
+  - dev*
+  - hot-fix*
+""")
+        }
+
+        steps.echo("✅ Branch '${branch}' passed deployment validation")
     }
 }
