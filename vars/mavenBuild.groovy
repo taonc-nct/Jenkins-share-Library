@@ -1,4 +1,4 @@
-def build() {
+def call() {
     def mvnCommand = 'mvn -B clean install -DskipTests'
     def exitCode = sh(script: mvnCommand, returnStatus: true)
 
