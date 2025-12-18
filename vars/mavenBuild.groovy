@@ -1,4 +1,4 @@
-def call() {
+def build() {
     def mvnCommand = 'mvn clean package -Dmaven.test.skip=true'
     def exitCode = sh(script: mvnCommand, returnStatus: true)
 
