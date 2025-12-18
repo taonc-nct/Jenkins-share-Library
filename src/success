@@ -5,6 +5,8 @@ podTemplate(
     containerTemplate(name: 'maven', image: 'maven:3.9.9-eclipse-temurin-17', command: '', args: ''),
     containerTemplate(name: 'buildah', image: 'quay.io/buildah/stable:v1.35', command: 'sleep', args: '99d', privileged: true, ttyEnabled: true
     , runAsUser: '0'),
+    containerTemplate(name: 'trivy',image: 'aquasec/trivy:0.44.0-slim', command: 'sleep',args: '99d', ttyEnabled: true ),
+    
   ]) 
   
   {
@@ -55,10 +57,10 @@ podTemplate(
 
                     buildah login -u $DOCKER_USER -p $DOCKER_PASS docker.io
                     # Tag image local với repo private
-                    buildah tag $IMAGE_NAME:latest $REGISTRY/$IMAGE_NAME:v1
+                    buildah tag $IMAGE_NAME:latest $REGISTRY:v1
 
                     # Push cả 2 tag lên Docker Hub
-                    buildah push $REGISTRY/$IMAGE_NAME:v1
+                    buildah push $REGISTRY:v1
                     # Kiểm tra images trên node
                     buildah images | grep $IMAGE_NAME
                 '''

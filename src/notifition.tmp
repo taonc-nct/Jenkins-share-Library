@@ -85,6 +85,10 @@
       <td>Build Details</td>
       <td id="build_details"><a href="${RUN_DISPLAY_URL}" target="_blank">${RUN_DISPLAY_URL}</a></td>
     </tr>
+    <tr>
+      <td>Build Details</td>
+      <td id="build_details"><a href="${RUN_DISPLAY_URL}" target="_blank">${RUN_DISPLAY_URL}</a></td>
+    </tr>
   </tbody>
 </table>
 
