@@ -1,5 +1,5 @@
 def call() {
-    def mvnCommand = 'mvn -B clean install -DskipTests'
+    def mvnCommand = 'mvn clean package -Dmaven.test.skip=true'
     def exitCode = sh(script: mvnCommand, returnStatus: true)
 
     if (exitCode != 0) {
