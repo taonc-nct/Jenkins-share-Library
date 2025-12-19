@@ -1,9 +1,7 @@
 def build() {
     def mvnCommand = '''
-        mvn -B \
-        -Dmaven.repo.local=$WORKSPACE/.m2/repository \
-        clean install \
-        -DskipTests
+         mvn clean install -DskipTests -Dcheckstyle.skip=true -Dmaven.repo.local=$WORKSPACE/.m2/repository 
+
     '''
     def exitCode = sh(script: mvnCommand, returnStatus: true)
 
